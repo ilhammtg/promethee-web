@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}Input Nilai (Scores){% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div>
+        <h3 class="text-2xl font-bold text-slate-900">Input Nilai Alternatif</h3>
+        <p class="text-slate-500 mt-1">Masukkan nilai setiap alternatif terhadap masing-masing kriteria.</p>
+    </div>
+    <div class="flex gap-3">
+        <button id="btnReload"
+            class="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 font-medium transition-colors shadow-sm">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Reload</span>
+        </button>
+        <button id="btnSave"
+            class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors shadow-sm">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Simpan Nilai</span>
+        </button>
+    </div>
+</div>
+
+<div id="alertBox" class="hidden mb-6 p-4 rounded-lg bg-red-50 text-red-700 border border-red-200" role="alert"></div>
+
+<!-- Chart Section -->
+<div class="mb-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h4 class="text-lg font-semibold text-slate-900">Visualisasi Perbandingan</h4>
+        <div class="text-sm text-slate-500">Radar Chart (Spider Web)</div>
+    </div>
+    <div id="chart" class="w-full h-[400px]"></div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 font-semibold text-slate-900">
+        Matriks Nilai
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left border-collapse" id="scoresTable">
+            <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100" id="thead">
+                <!-- Dinamis via JS -->
+            </thead>
+            <tbody id="tbody" class="divide-y divide-slate-100">
+                <!-- Dinamis via JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="flex items-start gap-3 mt-6 p-4 bg-sky-50 rounded-lg text-sky-800 border border-sky-200 text-sm">
+    <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-sky-600"></i>
+    <div>
+        <strong>Tips:</strong> Klik "Simpan Nilai" setelah melakukan perubahan. Pastikan semua kotak terisi angka valid.
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="/static/js/scores.js"></script>
+{% endblock %}

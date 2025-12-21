@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard PROMETHEE{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <h3 class="text-2xl font-bold text-slate-900">Dashboard PROMETHEE</h3>
+    <p class="text-slate-500 mt-1">Hasil Ranking & Perhitungan</p>
+  </div>
+  <div class="flex gap-3">
+    <button id="btnRefresh"
+      class="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 font-medium transition-colors shadow-sm">
+      <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+      <span>Refresh</span>
+    </button>
+    <button id="btnCompute"
+      class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors shadow-sm">
+      <i data-lucide="calculator" class="w-4 h-4"></i>
+      <span>Hitung PROMETHEE</span>
+    </button>
+  </div>
+</div>
+
+<div id="alertBox" class="hidden mb-6 p-4 rounded-lg bg-red-50 text-red-700 border border-red-200" role="alert"></div>
+
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+  <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
+    <span class="font-semibold text-slate-900">Hasil Ranking</span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+        <tr>
+          <th class="px-6 py-3 font-semibold text-center w-20">Rank</th>
+          <th class="px-6 py-3 font-semibold text-center w-24">Kode</th>
+          <th class="px-6 py-3 font-semibold">Nama Alternatif</th>
+          <th class="px-6 py-3 font-semibold text-right w-32">Leaving</th>
+          <th class="px-6 py-3 font-semibold text-right w-32">Entering</th>
+          <th class="px-6 py-3 font-semibold text-right w-32">Net Flow</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody" class="divide-y divide-slate-100">
+        <tr>
+          <td colspan="6" class="px-6 py-8 text-center text-slate-500">
+            Belum ada data. Klik tombol <strong class="text-slate-700">Hitung PROMETHEE</strong>.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}
