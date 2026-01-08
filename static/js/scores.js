@@ -1,6 +1,7 @@
 let CRITERIA = [];
 let ALTS = [];
 let SCORE_MAP = {}; // key: a-c -> value
+let CRITERIA_PARAMS = {}; // key: criteria_id -> array of params
 
 function showAlert(msg, type = "success") {
   const box = document.getElementById("alertBox");
@@ -17,6 +18,7 @@ async function loadMatrix() {
 
   CRITERIA = data.criteria || [];
   ALTS = data.alternatives || [];
+  CRITERIA_PARAMS = data.parameters || {};
   SCORE_MAP = {};
 
   (data.scores || []).forEach(s => {
@@ -34,7 +36,7 @@ function renderTable() {
   thead.innerHTML = `
     <tr>
       <th class="px-4 py-3 font-semibold text-center bg-slate-50 border-b border-slate-100">Alternatif</th>
-      ${CRITERIA.map(c => `<th class="px-4 py-3 text-center border-l border-slate-100"><div class="font-semibold text-slate-700">${c.code ?? ""}</div><div class="text-[10px] text-slate-500 font-normal uppercase tracking-wider">${c.name}</div></th>`).join("")}
+      ${CRITERIA.map(c => `<th class="px-4 py-3 text-center border-l border-slate-100 min-w-[120px]"><div class="font-semibold text-slate-700">${c.code ?? ""}</div><div class="text-[10px] text-slate-500 font-normal uppercase tracking-wider">${c.name}</div></th>`).join("")}
     </tr>
   `;
 
@@ -48,12 +50,38 @@ function renderTable() {
       ${CRITERIA.map(c => {
     const key = `${a.id}-${c.id}`;
     const val = SCORE_MAP[key] ?? "";
-    return `
-          <td class="p-2 border-l border-slate-100 text-center">
+    const params = CRITERIA_PARAMS[c.id] || [];
+    
+    let inputHtml = "";
+    
+    if (params.length > 0) {
+        // Render Select
+        const options = params.map(p => {
+             // Check for exact match (using loose equality for string/number diffs or small float diffs)
+             const isSelected = val !== "" && Math.abs(parseFloat(val) - parseFloat(p.value)) < 0.0001;
+             return `<option value="${p.value}" ${isSelected ? "selected" : ""}>${p.name}</option>`;
+        }).join("");
+        
+        inputHtml = `
+            <select class="score-input w-full px-2 py-1 text-xs border border-slate-200 rounded focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all bg-white"
+                data-alt="${a.id}" data-crit="${c.id}">
+                <option value="" disabled ${val === "" ? "selected" : ""}>Pilih...</option>
+                ${options}
+            </select>
+        `;
+    } else {
+        // Render Input Number
+        inputHtml = `
             <input type="number" step="0.01"
               class="score-input w-full px-2 py-1 text-sm border border-slate-200 rounded focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all text-center"
               data-alt="${a.id}" data-crit="${c.id}"
               value="${val}" placeholder="0">
+        `;
+    }
+
+    return `
+          <td class="p-2 border-l border-slate-100 text-center">
+            ${inputHtml}
           </td>
         `;
   }).join("")}

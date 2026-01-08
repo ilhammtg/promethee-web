@@ -3,125 +3,116 @@
 {% block title %}Input Pasien & Rekomendasi{% endblock %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-  <div>
-    <h3 class="text-2xl font-bold text-slate-900">Input Pasien & Rekomendasi</h3>
-    <p class="text-slate-500 mt-1">Input data pasien dan dapatkan rekomendasi rumah sakit yang sesuai.</p>
-  </div>
-</div>
+<div class="space-y-6">
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-  
-  <!-- Left Column: Input Form -->
-  <div class="space-y-6">
-    
-    <!-- Patient Info Card -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-2xl font-bold text-slate-900">Input Pasien & Rekomendasi</h3>
+        <p class="text-slate-500 mt-1">Input data pasien dan parameter klinis untuk mendapatkan rekomendasi rujukan terbaik.</p>
+      </div>
+    </div>
+
+    <!-- Unified Patient Referral Form -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-white">
-            <h4 class="font-semibold text-slate-900">Data Pasien</h4>
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <h3 class="font-semibold text-slate-900 flex items-center gap-2">
+                <i data-lucide="user-plus" class="w-5 h-5 text-primary-600"></i>
+                Input Data Pasien & Kondisi Klinis
+            </h3>
         </div>
-        <div class="p-6 space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pasien</label>
-                <input type="text" id="patientName" class="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-500" placeholder="Contoh: Budi Santoso">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
+        
+        <div class="p-6">
+            <form id="patientForm" class="space-y-8">
+                
+                <!-- Section 1: Data Diri -->
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Umur</label>
-                    <input type="number" id="patientAge" class="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-500" placeholder="0">
+                    <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wide mb-4 border-b pb-2">1. Identitas Pasien</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pasien</label>
+                            <input type="text" name="name" id="patientName" required
+                                class="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-200"
+                                placeholder="Nama lengkap...">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Umur (Tahun)</label>
+                                <input type="number" name="age" id="patientAge" required
+                                    class="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-200"
+                                    placeholder="0">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Kelamin</label>
+                                <select name="gender" id="patientGender"
+                                    class="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-200">
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Catatan Medis / Keluhan Utama</label>
+                            <textarea name="notes" id="patientNotes" rows="2"
+                                class="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-200"
+                                placeholder="Jelaskan kondisi singkat..."></textarea>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Section 2: Kriteria -->
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Kelamin</label>
-                    <select id="patientGender" class="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-500">
-                        <option value="L">Laki-laki</option>
-                        <option value="P">Perempuan</option>
-                    </select>
+                    <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wide mb-4 border-b pb-2">2. Parameter Kondisi (Kriteria)</h4>
+                    <div id="criteriaWeightsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <!-- JS Dynamic Load -->
+                        <div class="col-span-2 text-center text-slate-400 py-4">Memuat parameter...</div>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Kondisi / Catatan</label>
-                <textarea id="patientNotes" rows="3" class="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-500" placeholder="Deskripsikan kondisi pasien..."></textarea>
-            </div>
-            <button id="btnSavePatient" class="w-full py-2 px-4 bg-slate-800 text-white rounded-lg hover:bg-slate-900 font-medium transition-colors">
-                Simpan Data Pasien
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                    <button type="button" id="btnReset" onclick="document.getElementById('patientForm').reset()"
+                        class="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors">
+                        Reset Form
+                    </button>
+                    <button type="submit" id="btnRecommend"
+                        class="px-8 py-2.5 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 focus:ring-4 focus:ring-primary-100 transition-all shadow-md flex items-center gap-2">
+                        <i data-lucide="stethoscope" class="w-5 h-5"></i>
+                        Hitung & Proses Rujukan
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Referral History Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
+            <h3 class="font-semibold text-slate-900 flex items-center gap-2">
+                <i data-lucide="history" class="w-5 h-5 text-slate-500"></i>
+                Riwayat Rujukan Pasien
+            </h3>
+            <button id="btnRefresh" onclick="loadPatients()" class="text-slate-500 hover:text-primary-600 transition-colors p-2 rounded hover:bg-slate-100">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
             </button>
-        </div>
-    </div>
-
-    <!-- Custom Weights Card -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-white flex justify-between items-center">
-            <h4 class="font-semibold text-slate-900">Prioritas Kriteria (Bobot)</h4>
-            <span class="text-xs text-slate-500">Default diambil dari Master Kriteria</span>
-        </div>
-        <div class="p-6 space-y-4">
-            <div id="criteriaWeightsContainer" class="space-y-3">
-                <!-- Weights will be injected here via JS -->
-                <p class="text-sm text-slate-400">Memuat kriteria...</p>
-            </div>
-            
-            <div class="pt-4 border-t border-slate-100">
-                <button id="btnRecommend" class="w-full py-2 px-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    <span>Hitung Rekomendasi</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-  </div>
-
-  <!-- Right Column: Results & History -->
-  <div class="space-y-6">
-    
-    <!-- Recommendation Result -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-white">
-            <h4 class="font-semibold text-slate-900">Hasil Rekomendasi</h4>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
                     <tr>
-                        <th class="px-4 py-3 text-center w-16">Rank</th>
-                        <th class="px-4 py-3">Rumah Sakit</th>
-                        <th class="px-4 py-3 text-right">Net Flow</th>
+                        <th class="px-6 py-3 font-semibold">Nama Pasien</th>
+                        <th class="px-6 py-3 font-semibold">Umur/JK</th>
+                        <th class="px-6 py-3 font-semibold">Hasil Rujukan</th>
+                        <th class="px-6 py-3 font-semibold text-center w-24">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="recommendationTableBody" class="divide-y divide-slate-100">
-                    <tr>
-                        <td colspan="3" class="px-4 py-8 text-center text-slate-500">
-                            Klik tombol <strong>Hitung Rekomendasi</strong>.
-                        </td>
-                    </tr>
+                <tbody id="patientList" class="divide-y divide-slate-100">
+                    <!-- JS will populate -->
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Recent Patients List -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-white">
-            <h4 class="font-semibold text-slate-900">Daftar Pasien Terakhir</h4>
-        </div>
-        <div class="overflow-x-auto max-h-80">
-            <table class="w-full text-sm text-left">
-                <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
-                    <tr>
-                        <th class="px-4 py-3">Nama</th>
-                        <th class="px-4 py-3 w-16">Umur</th>
-                        <th class="px-4 py-3">Kondisi</th>
-                        <th class="px-4 py-3 w-16">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="patientsTableBody" class="divide-y divide-slate-100">
-                    <!-- Loaded via JS -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-  </div>
 </div>
 {% endblock %}
 

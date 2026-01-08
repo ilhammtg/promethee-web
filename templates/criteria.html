@@ -107,8 +107,59 @@
                 <strong>Penting:</strong> Jika mengubah kriteria, pastikan update nilai (Scores) juga.
             </div>
         </div>
+
     </div>
 </div>
+
+<!-- Parameter Modal -->
+<div id="paramModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all">
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h3 class="text-lg font-bold text-slate-800" id="paramModalTitle">Atur Parameter</h3>
+            <button id="btnCloseParamModal" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div class="p-6">
+            <input type="hidden" id="paramCriteriaId">
+            
+            <!-- Form Add Param -->
+            <div class="flex gap-3 items-end mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <div class="flex-1">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase">Nama Parameter</label>
+                    <input id="paramName" placeholder="Contoh: Sangat Baik" 
+                        class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none">
+                </div>
+                <div class="w-32">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase">Nilai</label>
+                    <input id="paramValue" type="number" step="0.01" placeholder="90" 
+                        class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none">
+                </div>
+                <button id="btnSaveParam" class="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-md hover:bg-primary-700 transition-colors shadow-sm">
+                    Tambah
+                </button>
+            </div>
+
+            <!-- List Params -->
+            <div class="overflow-hidden rounded-lg border border-slate-200">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 text-xs text-slate-500 uppercase font-semibold">
+                        <tr>
+                            <th class="px-4 py-3">Nama Parameter</th>
+                            <th class="px-4 py-3 text-right">Nilai</th>
+                            <th class="px-4 py-3 text-center w-20">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paramRows" class="divide-y divide-slate-100">
+                        <tr><td colspan="3" class="px-4 py-4 text-center text-slate-500">Memuat...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}

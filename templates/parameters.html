@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}Manajemen Parameter{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div>
+        <h3 class="text-2xl font-bold text-slate-900">Manajemen Parameter Kriteria</h3>
+        <p class="text-slate-500 mt-1">Kelola nilai parameter dinamis untuk setiap kriteria.</p>
+    </div>
+    <button id="btnReload"
+        class="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 font-medium transition-colors shadow-sm">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        <span>Reload</span>
+    </button>
+</div>
+
+<!-- Alert Box -->
+<div id="alertBox" class="hidden mb-6 p-4 rounded-lg bg-red-50 text-red-700 border border-red-200" role="alert"></div>
+
+<div class="space-y-8" id="criteriaContainer">
+    <!-- Criteria sections will be injected here -->
+    <div class="text-center py-12 text-slate-500">
+        Memuat data kriteria...
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/parameters_page.js"></script>
+{% endblock %}

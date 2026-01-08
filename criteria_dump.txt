@@ -1,0 +1,6 @@
+C1 - Keparahan Penyakit : benefit
+C2 - Fasilitas Puskesmas : cost
+C3 - Jarak RS Rujukan : cost
+C4 - Kompetensi Nakes : cost
+C5 - Ketersediaan TT RS : benefit
+C6 - Ekonomi Pasien : cost

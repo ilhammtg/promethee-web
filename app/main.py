@@ -138,6 +138,11 @@ def criteria_page(request: Request):
     return templates.TemplateResponse("criteria.html", {"request": request})
 
 
+
+@app.get("/parameters-page", response_class=HTMLResponse)
+def parameters_page(request: Request):
+    return templates.TemplateResponse("parameters.html", {"request": request})
+
 # ==============================
 # API: CRUD KRITERIA
 # ==============================
@@ -193,6 +198,40 @@ def api_delete_criteria(criteria_id: int):
     db.close()
     return {"status": "deleted"}
 
+
+# ==============================
+# API: CRUD CRITERIA PARAMETERS
+# ==============================
+@app.get("/api/criteria/{criteria_id}/parameters")
+def api_get_criteria_parameters(criteria_id: int):
+    db = SessionLocal()
+    rows = db.execute(text("SELECT * FROM criteria_parameters WHERE criteria_id=:cid ORDER BY value DESC"), {"cid": criteria_id}).mappings().all()
+    db.close()
+    return {"parameters": list(rows)}
+
+@app.post("/api/criteria/{criteria_id}/parameters")
+def api_create_criteria_parameter(criteria_id: int, payload: dict = Body(...)):
+    db = SessionLocal()
+    db.execute(text("""
+        INSERT INTO criteria_parameters (criteria_id, name, value)
+        VALUES (:cid, :name, :value)
+    """), {
+        "cid": criteria_id,
+        "name": payload.get("name"),
+        "value": float(payload.get("value", 0))
+    })
+    db.commit()
+    db.close()
+    return {"status": "created"}
+
+@app.delete("/api/parameters/{param_id}")
+def api_delete_criteria_parameter(param_id: int):
+    db = SessionLocal()
+    db.execute(text("DELETE FROM criteria_parameters WHERE id=:id"), {"id": param_id})
+    db.commit()
+    db.close()
+    return {"status": "deleted"}
+
 # ==============================
 # UI PAGE: SCORES
 # ==============================
@@ -214,13 +253,25 @@ def api_get_scores_matrix():
         SELECT alternative_id, criteria_id, value
         FROM scores
     """)).mappings().all()
+    
+    # Fetch parameters
+    params_rows = db.execute(text("SELECT * FROM criteria_parameters ORDER BY value DESC")).mappings().all()
+    
+    # Group params by criteria_id
+    parameters_map = {}
+    for p in params_rows:
+        cid = p["criteria_id"]
+        if cid not in parameters_map:
+            parameters_map[cid] = []
+        parameters_map[cid].append(dict(p))
 
     db.close()
 
     return {
         "criteria": list(criteria),
         "alternatives": list(alternatives),
-        "scores": list(scores)
+        "scores": list(scores),
+        "parameters": parameters_map
     }
 
 
