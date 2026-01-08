@@ -55,6 +55,52 @@
         <strong>Tips:</strong> Klik "Simpan Nilai" setelah melakukan perubahan. Pastikan semua kotak terisi angka valid.
     </div>
 </div>
+
+<!-- SECTION: Calculation Results -->
+<div class="my-8 border-t border-slate-200 pt-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+            <h3 class="text-xl font-bold text-slate-900">Hasil Perhitungan & Ranking</h3>
+            <p class="text-slate-500 text-sm">Klik tombol hitung untuk memproses metode PROMETHEE.</p>
+        </div>
+        <button id="btnCompute"
+            class="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors shadow-sm">
+            <i data-lucide="calculator" class="w-4 h-4"></i>
+            <span>Hitung PROMETHEE</span>
+        </button>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
+            <span class="font-semibold text-slate-900">Ranking Akhir</span>
+            <button id="btnRefreshResults"
+                class="text-sm text-slate-500 hover:text-primary-600 flex items-center gap-1">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh
+            </button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+                    <tr>
+                        <th class="px-6 py-3 font-semibold text-center w-20">Rank</th>
+                        <th class="px-6 py-3 font-semibold text-center w-24">Kode</th>
+                        <th class="px-6 py-3 font-semibold">Nama Alternatif</th>
+                        <th class="px-6 py-3 font-semibold text-right w-32">Leaving</th>
+                        <th class="px-6 py-3 font-semibold text-right w-32">Entering</th>
+                        <th class="px-6 py-3 font-semibold text-right w-32">Net Flow</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody" class="divide-y divide-slate-100">
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-slate-500">
+                            Belum ada data. Klik tombol <strong class="text-slate-700">Hitung PROMETHEE</strong>.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

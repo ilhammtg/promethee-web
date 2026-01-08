@@ -148,11 +148,73 @@ function renderChart() {
   chartInstance.render();
 }
 
+
+// ==========================================
+// PROMETHEE COMPUTATION LOGIC
+// ==========================================
+
+async function fetchFlowResults() {
+  try {
+    const res = await fetch("/results");
+    const data = await res.json();
+    renderFlowResults(data.results || []);
+  } catch (e) {
+    console.error("Failed to fetch results", e);
+  }
+}
+
+function renderFlowResults(rows) {
+  const body = document.getElementById("resultBody");
+  if (!rows || !rows.length) {
+    body.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Belum ada data ranking. Silakan hitung.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td class="px-6 py-3 text-center font-bold text-slate-700">${r.ranking ?? ""}</td>
+      <td class="px-6 py-3 text-center text-slate-500">${r.code ?? ""}</td>
+      <td class="px-6 py-3 font-medium text-slate-900">${r.name ?? ""}</td>
+      <td class="px-6 py-3 text-right text-slate-600 font-mono text-xs">${Number(r.leaving_flow).toFixed(4)}</td>
+      <td class="px-6 py-3 text-right text-slate-600 font-mono text-xs">${Number(r.entering_flow).toFixed(4)}</td>
+      <td class="px-6 py-3 text-right font-bold text-primary-600 font-mono">${Number(r.net_flow).toFixed(4)}</td>
+    </tr>
+  `).join("");
+}
+
+async function runCompute() {
+  const btn = document.getElementById("btnCompute");
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Menghitung...</span>`;
+  lucide.createIcons();
+
+  try {
+    const res = await fetch("/compute/promethee", { method: "POST" });
+    const data = await res.json();
+
+    if (data.error) {
+      showAlert(data.error, "danger");
+    } else {
+      showAlert("Perhitungan selesai!", "success");
+      await fetchFlowResults();
+    }
+  } catch (e) {
+    showAlert("Gagal menghitung. Cek server.", "danger");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    lucide.createIcons();
+  }
+}
+
 document.getElementById("btnReload").addEventListener("click", loadMatrix);
 document.getElementById("btnSave").addEventListener("click", saveScores);
+document.getElementById("btnCompute").addEventListener("click", runCompute);
+document.getElementById("btnRefreshResults").addEventListener("click", fetchFlowResults);
 
 // init
 loadMatrix().then(() => {
-  // Attempt render after load
   renderChart();
+  fetchFlowResults(); // Also load existing results on page load
 });

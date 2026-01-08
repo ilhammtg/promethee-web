@@ -3,37 +3,55 @@ import pandas as pd
 from app.config.database import SessionLocal
 from sqlalchemy import text
 
-def compute_promethee():
+
+def compute_promethee(custom_weights: dict = None):
+    """
+    custom_weights: dict {criteria_id: float_weight}
+    If provided, use these weights instead of DB weights, and DO NOT save to DB.
+    Return the ranked results directly.
+    """
     db = SessionLocal()
     try:
         # ==============================
         # 1. AMBIL DATAS
         # ==============================
-        criteria = db.execute(text("SELECT * FROM criteria")).mappings().all()
+        criteria_rows = db.execute(text("SELECT * FROM criteria")).mappings().all()
         alternatives = db.execute(text("SELECT * FROM alternatives")).mappings().all()
         scores = db.execute(text("""
             SELECT alternative_id, criteria_id, value 
             FROM scores
         """)).mappings().all()
 
-        if not criteria or not alternatives or not scores:
+        if not criteria_rows or not alternatives or not scores:
             return {"error": "Data kriteria, alternatif, atau nilai belum lengkap."}
 
+        # Convert criteria_rows to mutable list/dict to apply custom weights
+        # We also need to keep the structure
+        criteria = []
+        for c in criteria_rows:
+            c_dict = dict(c)
+            # Apply custom weight if exists
+            if custom_weights and str(c_dict["id"]) in custom_weights:
+                 c_dict["weight"] = float(custom_weights[str(c_dict["id"])])
+            elif custom_weights and c_dict["id"] in custom_weights: # handle int key
+                 c_dict["weight"] = float(custom_weights[c_dict["id"]])
+            
+            criteria.append(c_dict)
+
         # Tutup session baca dulu (opsional, tapi biar hemat koneksi)
-        # Kita pakai session baru nanti untuk write, atau pakai yg sama juga boleh.
-        # Disini kita lanjut pakai yg sama biar simple, atau tutup dulu.
-        # Agar konsisten, kita tutup dulu karena akan proses python berat.
         db.close()
 
         alt_ids = [a["id"] for a in alternatives]
-        crit_ids = [c["id"] for c in criteria]
+        crit_ids = [c["id"] for c in criteria if c["id"]] # ensure valid ids
 
         # ==============================
         # MATRIX NILAI MENTAH
         # ==============================
         matrix = pd.DataFrame(index=alt_ids, columns=crit_ids)
         for row in scores:
-            matrix.loc[row["alternative_id"], row["criteria_id"]] = float(row["value"])
+             # Only fill if crit_id exists (in case scores has old criteria)
+            if row["criteria_id"] in crit_ids:
+                matrix.loc[row["alternative_id"], row["criteria_id"]] = float(row["value"])
         
         matrix = matrix.astype(float)
 
@@ -43,6 +61,8 @@ def compute_promethee():
         normalized = matrix.copy()
         for c in criteria:
             cid = c["id"]
+            if cid not in matrix.columns: continue
+            
             col = matrix[cid]
             min_val = col.min()
             max_val = col.max()
@@ -69,6 +89,8 @@ def compute_promethee():
                 pref_sum = 0
                 for c in criteria:
                     cid = c["id"]
+                    if cid not in normalized.columns: continue
+
                     w = float(c["weight"])
                     
                     val_a = normalized.loc[a, cid]
@@ -106,8 +128,24 @@ def compute_promethee():
         sorted_flow = sorted(flows.items(), key=lambda x: x[1]["net"], reverse=True)
         rank_result = {alt_id: i+1 for i, (alt_id, _) in enumerate(sorted_flow)}
 
+        # If custom_weights, return result directly
+        if custom_weights:
+            results = []
+            for alt_id, flow_data in sorted_flow:
+                # Find alternative data
+                alt_data = next((a for a in alternatives if a["id"] == alt_id), None)
+                results.append({
+                    "ranking": rank_result[alt_id],
+                    "code": alt_data["code"] if alt_data else "",
+                    "name": alt_data["name"] if alt_data else "",
+                    "net_flow": flow_data["net"],
+                    "entering_flow": flow_data["entering"],
+                    "leaving_flow": flow_data["leaving"]
+                })
+            return {"results": results}
+
         # ==============================
-        # 8. SIMPAN KE DATABASE
+        # 8. SIMPAN KE DATABASE (Global Only)
         # ==============================
         # Buka koneksi baru khusus write
         db_write = SessionLocal()
@@ -138,6 +176,7 @@ def compute_promethee():
             raise e
         finally:
             db_write.close()
+
 
     except Exception as e:
         print(f"Error computing promethee: {e}")

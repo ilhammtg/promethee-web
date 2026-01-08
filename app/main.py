@@ -5,8 +5,11 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
 from app.config.database import engine, SessionLocal
 from app.services.promethee_engine import compute_promethee
+from app.routes import patients
 
 app = FastAPI()
+
+app.include_router(patients.router)
 
 # Mount Static & Templates
 app.mount("/static", StaticFiles(directory="static"), name="static")

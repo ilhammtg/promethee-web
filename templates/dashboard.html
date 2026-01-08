@@ -1,53 +1,86 @@
 {% extends "layout.html" %}
 
-{% block title %}Dashboard PROMETHEE{% endblock %}
+{% block title %}Dashboard PROMETHE{% endblock %}
 
 {% block content %}
 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
   <div>
-    <h3 class="text-2xl font-bold text-slate-900">Dashboard PROMETHEE</h3>
-    <p class="text-slate-500 mt-1">Hasil Ranking & Perhitungan</p>
+    <h3 class="text-2xl font-bold text-slate-900">Dashboard Overview</h3>
+    <p class="text-slate-500 mt-1">Ringkasan data sistem.</p>
   </div>
   <div class="flex gap-3">
-    <button id="btnRefresh"
+    <button id="btnRefreshStats"
       class="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 font-medium transition-colors shadow-sm">
       <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-      <span>Refresh</span>
-    </button>
-    <button id="btnCompute"
-      class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors shadow-sm">
-      <i data-lucide="calculator" class="w-4 h-4"></i>
-      <span>Hitung PROMETHEE</span>
+      <span>Refresh Data</span>
     </button>
   </div>
 </div>
 
-<div id="alertBox" class="hidden mb-6 p-4 rounded-lg bg-red-50 text-red-700 border border-red-200" role="alert"></div>
-
-<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-  <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
-    <span class="font-semibold text-slate-900">Hasil Ranking</span>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <!-- Card 1: Alternatives -->
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+    <div>
+      <p class="text-sm font-medium text-slate-500 mb-1">Total Alternatif</p>
+      <h4 id="countAlternatives" class="text-3xl font-bold text-slate-900">-</h4>
+    </div>
+    <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+      <i data-lucide="layers" class="w-6 h-6"></i>
+    </div>
   </div>
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm text-left">
-      <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
-        <tr>
-          <th class="px-6 py-3 font-semibold text-center w-20">Rank</th>
-          <th class="px-6 py-3 font-semibold text-center w-24">Kode</th>
-          <th class="px-6 py-3 font-semibold">Nama Alternatif</th>
-          <th class="px-6 py-3 font-semibold text-right w-32">Leaving</th>
-          <th class="px-6 py-3 font-semibold text-right w-32">Entering</th>
-          <th class="px-6 py-3 font-semibold text-right w-32">Net Flow</th>
-        </tr>
-      </thead>
-      <tbody id="resultBody" class="divide-y divide-slate-100">
-        <tr>
-          <td colspan="6" class="px-6 py-8 text-center text-slate-500">
-            Belum ada data. Klik tombol <strong class="text-slate-700">Hitung PROMETHEE</strong>.
-          </td>
-        </tr>
-      </tbody>
-    </table>
+
+  <!-- Card 2: Criteria -->
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+    <div>
+      <p class="text-sm font-medium text-slate-500 mb-1">Total Kriteria</p>
+      <h4 id="countCriteria" class="text-3xl font-bold text-slate-900">-</h4>
+    </div>
+    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
+      <i data-lucide="sliders" class="w-6 h-6"></i>
+    </div>
+  </div>
+
+  <!-- Card 3: Patients -->
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+    <div>
+      <p class="text-sm font-medium text-slate-500 mb-1">Pasien Terdaftar</p>
+      <h4 id="countPatients" class="text-3xl font-bold text-slate-900">-</h4>
+    </div>
+    <div class="p-3 bg-purple-50 text-purple-600 rounded-lg">
+      <i data-lucide="users" class="w-6 h-6"></i>
+    </div>
+  </div>
+
+  <!-- Card 4: System Status -->
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+    <div>
+      <p class="text-sm font-medium text-slate-500 mb-1">Status Sistem</p>
+      <h4 class="text-lg font-bold text-slate-900 text-green-600 flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span> Active
+      </h4>
+    </div>
+    <div class="p-3 bg-slate-50 text-slate-600 rounded-lg">
+      <i data-lucide="activity" class="w-6 h-6"></i>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+  <div class="max-w-md mx-auto">
+    <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+      <i data-lucide="sparkles" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-lg font-bold text-slate-900 mb-2">Selamat Datang di Promethean Insights</h3>
+    <p class="text-slate-500 mb-6">Sistem Pendukung Keputusan menggunakan metode PROMETHEE. Mulai dengan mengelola data
+      alternatif dan kriteria, kemudian lakukan input nilai dan perhitungan.</p>
+    <div class="flex justify-center gap-3">
+      <a href="/scores-page"
+        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors">Input
+        Nilai & Hitung</a>
+      <a href="/patients-page"
+        class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium transition-colors">Input
+        Pasien</a>
+    </div>
   </div>
 </div>
 {% endblock %}
